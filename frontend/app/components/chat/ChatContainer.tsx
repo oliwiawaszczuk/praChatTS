@@ -2,8 +2,8 @@
 
 
 import React from "react";
-import ChatMessagesBox from "@/app/components/chat/ChatMessagesBox";
-import ChatInput from "@/app/components/chat/ChatInput";
+import ChatMessagesBox from "./ChatMessagesBox";
+import ChatInput from "./ChatInput";
 
 const ChatContainer: React.FC = () => {
 

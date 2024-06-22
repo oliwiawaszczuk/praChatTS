@@ -16,13 +16,12 @@ def create_app(db, migrate):
 
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_path
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['SECRET_KEY'] = 'key'
 
     db.init_app(app)
     migrate.init_app(app, db)
 
     # create routes
     create_socket_routes(app, socketio)
-    create_login_route(app)
+    create_login_route(app, socketio)
 
     return app, socketio

@@ -2,8 +2,8 @@
 
 
 import React, {useState} from "react";
-import FriendsListBox from "@/app/components/friendsList/FriendsListBox";
-import FriendsListInput from "@/app/components/friendsList/FriendsListInput";
+import FriendsListBox from "./FriendsListBox";
+import FriendsListInput from "./FriendsListInput";
 
 const FriendsListContainer: React.FC = () => {
 

@@ -1,56 +1,50 @@
-from flask import request, jsonify
+from flask import request
 
 from lib.hash import verify_password
-from models.query import checking_is_user_exist_by_email, add_new_user
+from models.query import checking_is_user_exist_by_email, add_new_user, create_session, \
+    check_session_by_sid_and_user_id, delete_session
 
 
-def create_login_route(app):
-    @app.route('/login', methods=['POST'])
-    def login():
-        if request.method == "POST":
-            data = request.json
-            email = data.get('email')
-            password = data.get('password')
+def create_login_route(app, socketio):
+    def login_successed(user):
+        token = [request.sid[::-1], str(user.id)]
+        create_session(user.id, request.sid)
+        socketio.emit('login_successful', {'token': ''.join(token), 'user': {'id': user.id, 'username': user.username, 'userCode': user.userCode, 'email': user.email}})
 
-            if email.strip() == "" or password.strip() == "":
-                return jsonify({"message": "Email and password are required"}), 400
+    @socketio.on('login')
+    def handle_login(data):
+        email = data['email']
+        password = data['password']
 
-            user = checking_is_user_exist_by_email(email)
-            if user:
-                if verify_password(password, user.password):
-                    # session_nr = create_session(email)
-                    # session['user_id'] = user.id
-                    return jsonify({
-                        'message': 'Logged in successfully',
-                        'user': {'username': user.username, 'email': user.email}
-                    }), 200
-                else:
-                    return jsonify({'message': 'Wrong password', 'user': None}), 401
+        if email.strip() == "" or password.strip() == "":
+            socketio.emit('login_failed', 'Please enter both email and password')
+
+        user = checking_is_user_exist_by_email(email)
+        if user:
+            if verify_password(password, user.password):
+                login_successed(user)
             else:
-                return jsonify({'message': 'User with this email does not exist.', 'user': None}), 404
-        return {'error': 'Bad request'}, 400
+                socketio.emit('login_failed', 'Wrong password')
+        else:
+            socketio.emit('login_failed', 'User with this email does not exist')
 
-    @app.route('/register', methods=['POST'])
-    def register():
-        if request.method == "POST":
-            data = request.json
-            username = data.get('username')
-            email = data.get('email')
-            password = data.get('password')
+    @socketio.on('register')
+    def handle_register(data):
+        username = data['username']
+        email = data['email']
+        password = data['password']
 
-            if email.strip() == "" or username.strip() == "" or password.strip() == "":
-                return jsonify({"message": "Fields cannot be empty"}), 400
-
+        if email.strip() == "" or username.strip() == "" or password.strip() == "":
+            socketio.emit('login_failed', 'Please enter both email and password')
+        else:
             if checking_is_user_exist_by_email(email) is not None:
-                return jsonify({"message": "User with this email exist"}), 409
+                socketio.emit('login_failed', 'User with this email exist')
+            else:
+                user = add_new_user(username, email, password)
+                login_successed(user)
 
-            user = add_new_user(username, email, password)
-            # session = create_session(email)
-            return jsonify({
-                "message": "User registered successfully",
-                "user": {"username": user.username, "email": user.email}
-            }), 201
-
-    @app.route('/logout')
-    def logout():
-        pass
+    @socketio.on('logout')
+    def logout(token):
+        sid, user_id = token[:20], token[20:]
+        delete_session(sid[::-1], user_id)
+        socketio.emit('logout')

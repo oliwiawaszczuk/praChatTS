@@ -43,26 +43,22 @@ def check_exists_number_session(nr):
     return session if session else None
 
 
-def create_session(email, sid):
-    # from lib.creator_sessions import create_session_number, LENGTH
-    # new_session_number = create_session_number(LENGTH)
-    # while check_exists_number_session(new_session_number):
-    #     new_session_number = create_session_number(LENGTH)
-
+def create_session(user_id, sid):
     date_of_creation = datetime.now()
     expiration_date = datetime.now() + timedelta(days=4)
 
-    user = checking_is_user_exist_by_email(email)
-
-    new_session = Session(sid, user.id, date_of_creation, expiration_date)
+    new_session = Session(sid, user_id, date_of_creation, expiration_date)
     db.session.add(new_session)
     db.session.commit()
 
-    return sid
+
+def check_session_by_sid_and_user_id(sid, user_id):
+    session = Session.query.filter_by(session_number=sid, user_id=user_id).first()
+    return session if session else None
 
 
-def delete_session(nr):
-    session = Session.query.filter_by(session_number=nr).first()
+def delete_session(sid, user_id):
+    session = Session.query.filter_by(session_number=sid, user_id=user_id).first()
     db.session.delete(session)
     db.session.commit()
 

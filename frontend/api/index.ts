@@ -1,4 +1,5 @@
-import socketIOClient from "socket.io-client";
+import socketIOClient from 'socket.io-client';
+import useStore from './useStore';
 
 
 export const chatSocket = socketIOClient('http://127.0.0.1:5000', {
@@ -8,7 +9,9 @@ export const chatSocket = socketIOClient('http://127.0.0.1:5000', {
   reconnectionAttempts: 5,
   reconnectionDelay: 1000,
   timeout: 20000,
-  withCredentials: true,
+  auth: {
+    auth_token: '',
+  }
 });
 
 chatSocket.on('connect', () => {
@@ -19,9 +22,8 @@ chatSocket.on('disconnect', (reason) => {
   console.log('Disconnected from the server', reason);
   if (reason === 'io server disconnect') {
     chatSocket.connect();
-    window.location.href = '/login';
   }
 });
 
-
-
+const setSocket = useStore.getState().setSocket;
+setSocket(chatSocket);

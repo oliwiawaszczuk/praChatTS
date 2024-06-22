@@ -3,15 +3,17 @@
 import React, { useEffect, useState } from 'react';
 import ChatContainer from "../components/chat/ChatContainer";
 import socketIOClient, { Socket } from 'socket.io-client';
-import FriendsListContainer from "@/app/components/friendsList/FriendsListContainer";
+import FriendsListContainer from "../components/friendsList/FriendsListContainer";
+import {useRouter} from "next/navigation";
+import useStore from "@/api/useStore";
 
 const HomePage: React.FC = () => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isNavOpen, setIsNavOpen] = useState(false);
+  const router = useRouter();
+  const username = useStore((state) => state.username);
+  const userCode = useStore((state) => state.userCode);
 
-  useEffect(() => {
-
-  }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -22,7 +24,6 @@ const HomePage: React.FC = () => {
 
     window.addEventListener('resize', handleResize);
 
-    // Clean up the event listener on component unmount
     return () => {
       window.removeEventListener('resize', handleResize);
     };
@@ -34,8 +35,11 @@ const HomePage: React.FC = () => {
 
   return (
       <div className="min-h-[calc(100vh-1rem)] mx:w-[80%] mg:w-[90%] mx:m-auto mg:m-auto h-[calc(100vh-1rem)] overflow-hidden flex flex-col m-2">
-        <header className="text-white p-3">
-          <h1>Hi, <b>user#code</b> Welcome to <b>PraChat!</b></h1>
+        <header className="text-white flex justify-between items-center px-3">
+          <h1 className='p-3 px-0'>Hi, <b>{username}#{userCode}</b> Welcome to <b>PraChat!</b></h1>
+          <img src='/duck.png' className='w-10 rounded-[50%] cursor-pointer' onClick={() => {
+            router.push('/profile')
+          }}/>
         </header>
 
         <div className="flex flex-1 overflow-hidden">
