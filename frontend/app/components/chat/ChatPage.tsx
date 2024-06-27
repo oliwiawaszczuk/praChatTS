@@ -1,13 +1,13 @@
 'use client'
 
 import React, { useEffect, useState } from 'react';
-import ChatContainer from "../components/chat/ChatContainer";
+import ChatContainer from "./ChatContainer";
 import socketIOClient, { Socket } from 'socket.io-client';
-import FriendsListContainer from "../components/friendsList/FriendsListContainer";
+import FriendsListContainer from "../friendsList/FriendsListContainer";
 import {useRouter} from "next/navigation";
 import useStore from "@/api/useStore";
 
-const HomePage: React.FC = () => {
+export const ChatPage: React.FC = () => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isNavOpen, setIsNavOpen] = useState(false);
   const router = useRouter();
@@ -74,4 +74,4 @@ const HomePage: React.FC = () => {
   );
 };
 
-export default HomePage;
+export default ChatPage;

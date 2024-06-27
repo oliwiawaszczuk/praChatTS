@@ -2,6 +2,7 @@
 
 
 import React, {useState} from "react";
+import {chatSocket} from "@/api";
 
 const ChatInput: React.FC = () => {
   const [message, setMessage] = useState("");
@@ -9,6 +10,7 @@ const ChatInput: React.FC = () => {
     const sendMessage = () => {
         // socket.emit("message", { text: message, 'session': getCookie('session'), 'currentConversationId': currentConversationId });
         // setMessage("");
+        chatSocket.emit('check_sid', localStorage.getItem('token'))
     };
 
   return (

@@ -47,20 +47,44 @@ def create_session(user_id, sid):
     date_of_creation = datetime.now()
     expiration_date = datetime.now() + timedelta(days=4)
 
-    new_session = Session(sid, user_id, date_of_creation, expiration_date)
+    new_session = Session(sid, '', user_id, date_of_creation, expiration_date)
     db.session.add(new_session)
     db.session.commit()
 
 
+def update_session(sid, new_sid):
+    session = Session.query.filter_by(session_number=sid).first()
+    if session is None:
+        session = Session.query.filter_by(old_session_number=sid).first()
+    session.session_number = new_sid
+    session.old_session_number = sid
+    db.session.commit()
+
+
 def check_session_by_sid_and_user_id(sid, user_id):
-    session = Session.query.filter_by(session_number=sid, user_id=user_id).first()
-    return session if session else None
+    session1 = Session.query.filter_by(session_number=sid, user_id=user_id).first()
+    session2 = Session.query.filter_by(old_session_number=sid, user_id=user_id).first()
+    if session1:
+        return session1
+    elif session2:
+        return session2
+    else:
+        return None
 
 
 def delete_session(sid, user_id):
     session = Session.query.filter_by(session_number=sid, user_id=user_id).first()
     db.session.delete(session)
     db.session.commit()
+
+
+def get_user_by_sid(sid):
+    session = Session.query.filter_by(session_number=sid).first()
+    if session:
+        user = get_user_by_user_id(session.user_id)
+        if user:
+            return user
+    return None
 
 
 # def check_expiration_date(nr):
@@ -110,17 +134,19 @@ def get_every_invitations_for_user_id(user_id):
 
 def accept_invitation_by_users_id(user1_id, user2_id):
     invitation = Invite.query.filter_by(inviter_user_id=user1_id, invitee_user_id=user2_id).first()
-    db.session.delete(invitation)
-    date = datetime.now()
-    friend_relation = FriendsRelation(user1_id, user2_id, date)
-    db.session.add(friend_relation)
-    db.session.commit()
+    if invitation:
+        db.session.delete(invitation)
+        date = datetime.now()
+        friend_relation = FriendsRelation(user1_id, user2_id, date)
+        db.session.add(friend_relation)
+        db.session.commit()
 
 
 def decline_invitation_by_users_id(user1_id, user2_id):
     invitation = Invite.query.filter_by(inviter_user_id=user1_id, invitee_user_id=user2_id).first()
-    db.session.delete(invitation)
-    db.session.commit()
+    if invitation:
+        db.session.delete(invitation)
+        db.session.commit()
 
 
 def invite_friend_by_users_id(inviter_user_id, invitee_user_id):

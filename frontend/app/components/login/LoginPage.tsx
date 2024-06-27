@@ -1,13 +1,13 @@
 'use client'
 
-import React, {useState} from 'react'
-import LoginInput from "../components/LoginInput";
-import RegisterInput from "../components/RegisterInput";
-import {chatSocket} from "@/api";
+import React, {useEffect, useState} from 'react'
+import LoginInput from "./LoginInput";
+import RegisterInput from "./RegisterInput";
 import {useRouter} from "next/navigation";
 import useStore from "@/api/useStore";
+import {chatSocket} from "@/api";
 
-const Page = () => {
+const LoginPage = () => {
     const [login, setLogin] = useState(true);
     const router = useRouter();
     const setUsername = useStore((state) => state.setUsername);
@@ -15,8 +15,8 @@ const Page = () => {
 
     chatSocket.on('login_successful', (data) => {
         localStorage.setItem('token', data.token);
-        setUsername(data.user['username']);
-        setUserCode(data.user['userCode']);
+        setUsername(data.user.username);
+        setUserCode(data.user.userCode);
         router.push('/chat');
     });
 
@@ -35,4 +35,4 @@ const Page = () => {
     )
 }
 
-export default Page
+export default LoginPage

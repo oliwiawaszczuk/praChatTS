@@ -1,3 +1,5 @@
+'use client'
+
 import { create } from 'zustand';
 import { Socket } from "socket.io-client";
 
@@ -13,6 +15,9 @@ interface StoreState {
 
   email: string;
   setEmail: (email: string) => void;
+
+  loading: boolean;
+  setLoading: (loading: boolean) => void;
 }
 
 const useStore = create<StoreState>((set) => ({
@@ -27,6 +32,9 @@ const useStore = create<StoreState>((set) => ({
 
   email: '',
   setEmail: (email) => set({ email }),
+
+  loading: true,
+  setLoading: (loading) => set({ loading }),
 }));
 
 export default useStore;

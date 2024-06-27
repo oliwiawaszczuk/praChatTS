@@ -3,6 +3,8 @@ from flask_cors import CORS
 from flask_socketio import SocketIO
 import os
 
+from routes.chat import create_chat_routes
+from routes.friendsList import create_friends_list_routes
 from routes.login import create_login_route
 from routes.socket import create_socket_routes
 
@@ -21,7 +23,9 @@ def create_app(db, migrate):
     migrate.init_app(app, db)
 
     # create routes
-    create_socket_routes(app, socketio)
-    create_login_route(app, socketio)
+    create_socket_routes(socketio)
+    create_login_route(socketio)
+    create_chat_routes(socketio)
+    create_friends_list_routes(socketio)
 
     return app, socketio

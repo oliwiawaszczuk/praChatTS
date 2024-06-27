@@ -1,16 +1,23 @@
 'use client'
 
-import React, {useState} from 'react'
-import {chatSocket} from "@/api";
+import React, {useEffect, useState} from 'react'
 import {useRouter} from "next/navigation";
+import useStore from "@/api/useStore";
+import {chatSocket} from "@/api";
 
 const ProfilePage = () => {
-  const router = useRouter();
+    const router = useRouter();
+    const setUsername = useStore((state) => state.setUsername);
+    const setUserCode = useStore((state) => state.setUserCode);
+
 
     chatSocket.on('logout', () => {
         localStorage.removeItem('token');
+        setUsername('');
+        setUserCode('');
         router.push('/login');
-    })
+    });
+
 
     return (
         <div className='mx-2'>

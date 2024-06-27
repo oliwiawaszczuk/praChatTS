@@ -2,10 +2,10 @@ from flask import request
 
 from lib.hash import verify_password
 from models.query import checking_is_user_exist_by_email, add_new_user, create_session, \
-    check_session_by_sid_and_user_id, delete_session
+    delete_session
 
 
-def create_login_route(app, socketio):
+def create_login_route(socketio):
     def login_successed(user):
         token = [request.sid[::-1], str(user.id)]
         create_session(user.id, request.sid)

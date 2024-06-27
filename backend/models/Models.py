@@ -24,12 +24,14 @@ class Session(db.Model):
     __tablename__ = 'sessions'
 
     session_number = db.Column(db.String, primary_key=True)
+    old_session_number = db.Column(db.String)
     user_id = db.Column(db.Integer)
     date_of_creation = db.Column(db.DateTime)
     date_of_expiration = db.Column(db.DateTime)
 
-    def __init__(self, session_number, user_id, date_of_creation, date_of_expiration):
+    def __init__(self, session_number, old_session_number, user_id, date_of_creation, date_of_expiration):
         self.session_number = session_number
+        self.old_session_number = old_session_number
         self.user_id = user_id
         self.date_of_creation = date_of_creation
         self.date_of_expiration = date_of_expiration
